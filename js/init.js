@@ -15,7 +15,7 @@ $(function(){
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) {return;}
     js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/zh_TW/sdk.js";
+    js.src = "https://connect.facebook.net/zh_TW/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
@@ -23,13 +23,35 @@ $(function(){
   /* Models */
 
   var Feed = Backbone.Model.extend({
+    initialize: function() {
+      console.log(this);
+    }
+  });
 
+  var Picture = Backbone.Model.extend({
+    initialize: function() {
+
+    }
+  });
+
+  var User = Backbone.Model.extend({
+    initialize: function() {
+
+    }
   });
 
   /* Collections */
 
   var FeedList = Backbone.Collection.extend({
     model: Feed
+  });
+
+  var PictureList = Backbone.Collection.extend({
+    model: Picture
+  });
+
+  var UserList = Backbone.Collection.extend({
+    model: User
   });
 
 
@@ -49,7 +71,7 @@ $(function(){
         console.log('已經登入');
         that.remove();
         group_selector_view = new GroupSelectorView;
-      }, {scope: 'user_groups'});
+      }, {scope: 'user_groups,user_photos'});
     }
   });
 
@@ -78,19 +100,59 @@ $(function(){
 
   var SliderView = Backbone.View.extend({
     el: $('#slider_view'),
+    fb_data: [],
+    fb_images: {},
+    feedList: new FeedList(),
     initialize : function( group_id ){
+      var that = this;
       this.group_id = group_id;
-      console.log('準備抓社團 ' + group_id + ' 的資料');
       this.$el.removeClass('hide');
-      this.fetchFB();
+      this.go();
     },
+    go: function(){
+      var that = this;
+      this.fetchFB().done(function(data){
+
+        console.log('社團 ' + that.group_id + ' 的資料抓取完成');
+
+        that.feedList.add(data);
+        console.log(that.feedList);
+        window.setTimeout(function(){
+          that.go();
+        }, 10000);
+      });
+    }
+    ,
     fetchFB: function(){
       this.fb_data = [];
       var that = this;
-      FB.api('/' + this.group_id + '/feed', function(data){
-        that.data.concat(data);
+      var defered = $.Deferred();
 
+      console.log('開始抓社團 ' + that.group_id + ' 的資料');
+
+      var fetchMore = function(url){
+        $.get(url).done(function(data){
+          that.fb_data = that.fb_data.concat(data.data);
+          if(data.paging && data.paging.next && that.fb_data.length < 100) {
+            fetchMore(data.paging.next);
+          } else {
+            defered.resolve(that.fb_data);
+          }
+        }).error(function(){
+          defered.reject('jQuery GET Error');
+        });
+      }
+
+      FB.api('/' + this.group_id + '/feed', function(data){
+        that.fb_data = that.fb_data.concat(data.data);
+        if(data.paging && data.paging.next) {
+          fetchMore(data.paging.next);
+        } else {
+          defered.resolve(that.fb_data);
+        }
       });
+
+      return defered.promise();
     }
   });
 
