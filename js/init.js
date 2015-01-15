@@ -24,19 +24,40 @@ $(function(){
 
   var Feed = Backbone.Model.extend({
     initialize: function() {
-      console.log(this);
+      if(this.attributes.picture) {
+        pictureList.add({ "id" : this.attributes.link.match('fbid=([0-9]+)')[1]});
+        this.set({"picture_id" : this.attributes.link.match('fbid=([0-9]+)')[1]});
+      } else {
+        this.set({"picture_id" : null});
+      }
+      console.log(this.attributes);
+      // if(this.attributes.from) {
+      //   userList.add(this.attributes.from);
+      // }
     }
   });
 
   var Picture = Backbone.Model.extend({
+    defered : null,
     initialize: function() {
-
+      this.defered = $.Deferred();
+      var pic = this;
+      FB.api('/' + this.attributes.id , function(data){
+        pic.set({"image":data.images[0]});
+        pic.defered.resolve(true);
+      });
+    },
+    check: function(){
+      if(this.attributes.image) {
+        return true;
+      } else {
+        return this.defered.promise();
+      }
     }
   });
 
   var User = Backbone.Model.extend({
     initialize: function() {
-
     }
   });
 
@@ -46,13 +67,26 @@ $(function(){
     model: Feed
   });
 
+  var feedList = new FeedList();
+
   var PictureList = Backbone.Collection.extend({
-    model: Picture
+    model: Picture,
+    check: function(){
+      var defereds = [];
+      this.each(function(pic) {
+        defereds.push(pic.check());
+      });
+      return $.when.apply($, defereds);
+    }
   });
 
-  var UserList = Backbone.Collection.extend({
-    model: User
-  });
+  var pictureList = new PictureList();
+
+  // var UserList = Backbone.Collection.extend({
+  //   model: User
+  // });
+
+  // var userList = new UserList();
 
 
   /* Views */
@@ -68,7 +102,6 @@ $(function(){
     fb_login : function(){
       var that = this;
       FB.login(function(response){
-        console.log('已經登入');
         that.remove();
         group_selector_view = new GroupSelectorView;
       }, {scope: 'user_groups,user_photos'});
@@ -92,7 +125,6 @@ $(function(){
     },
     template : _.template($('#group_item_template').html()),
     group_click : function(){
-      console.log(this.$el.find('select').val());
       this.remove();
       sliderView = new SliderView(this.$el.find('select').val());
     }
@@ -102,24 +134,42 @@ $(function(){
     el: $('#slider_view'),
     fb_data: [],
     fb_images: {},
-    feedList: new FeedList(),
     initialize : function( group_id ){
       var that = this;
       this.group_id = group_id;
       this.$el.removeClass('hide');
       this.go();
     },
+    template : _.template($('#slider_item').html()),
     go: function(){
       var that = this;
       this.fetchFB().done(function(data){
+        feedList.add(data);
 
-        console.log('社團 ' + that.group_id + ' 的資料抓取完成');
+        pictureList.check().done(function(){
+          var pictures = pictureList.toJSON();
+          var picturesObj = {};
+          for (var i = pictures.length - 1; i >= 0; i--) {
+            picturesObj[pictures[i].id] = pictures[i].image;
+          };
+          var feeds = {"feeds": feedList.toJSON(), "pictures": picturesObj};
+          console.log(feeds);
+          var template = that.template(feeds);
+          that.$el.find('.center-content').html(template);
+          that.$el.find('#slider').nivoSlider({
+            effect: "fade",
+            animSpeed: 500,
+            pauseTime: 10000,
+            directionNav: false,
+            controlNav: false,
+            controlNavThumbs: false,
+            pauseOnHover: true
+          });
+        });
 
-        that.feedList.add(data);
-        console.log(that.feedList);
-        window.setTimeout(function(){
-          that.go();
-        }, 10000);
+        // window.setTimeout(function(){
+        //   that.go();
+        // }, 10000);
       });
     }
     ,
@@ -127,8 +177,6 @@ $(function(){
       this.fb_data = [];
       var that = this;
       var defered = $.Deferred();
-
-      console.log('開始抓社團 ' + that.group_id + ' 的資料');
 
       var fetchMore = function(url){
         $.get(url).done(function(data){
@@ -157,3 +205,11 @@ $(function(){
   });
 
 });
+
+// effect: "fade",
+// animSpeed: 500,
+// pauseTime: 10000,
+// directionNav: false,
+// controlNav: false,
+// controlNavThumbs: false,
+// pauseOnHover: false

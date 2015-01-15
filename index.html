@@ -3,38 +3,65 @@
   <head>
     <meta charset="utf-8">
     <title>title</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/nivo-slider.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/nivo-slider.css">
+    <link rel="stylesheet" href="css/style.css">
     <!-- Optional theme -->
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css"> -->
     <!-- Latest compiled and minified JavaScript -->
   </head>
   <body>
-    <div id="login_view" class="block hide view-login">
-      <div class="centered">
-        <h1>登入 facebook 帳號後繼續</h1>
-        <br/>
-        <button type="button" class="btn btn-primary btn-fb-login">登入</button>
+    <div id="login_view" class="center-container hide view-login">
+      <div class="center-helper">
+        <div class="center-content">
+          <h1>登入 facebook 帳號後繼續</h1>
+          <br/>
+          <button type="button" class="btn btn-primary btn-fb-login">登入</button>
+        </div>
       </div>
     </div>
 
-    <div id="group_selector_view" class="block hide">
+    <div id="group_selector_view" class="center-container hide">
       <script type="text/template" id="group_item_template">
         <option value="<%- id %>"><%- name %></option>
       </script>
-      <div class="centered">
-        <h1>選擇一個fb社團</h1>
-        <select class="select-group form-control">
-        </select>
-        <br/>
-        <button type="button" class="btn btn-primary btn-fb-group">確定</button>
+      <div class="center-helper">
+        <div class="center-content">
+          <h1>選擇一個fb社團</h1>
+          <select class="select-group form-control">
+          </select>
+          <br/>
+          <button type="button" class="btn btn-primary btn-fb-group">確定</button>
+        </div>
       </div>
     </div>
 
-    <div id="slider_view" class="block hide view-groups">
-      <div class="centered">
-        <h1>TEST</h1>
+    <div id="slider_view" class="center-container hide view-slider">
+      <script type="text/template" id="slider_item">
+          <div class="slider-wrap">
+            <div id="slider" class="nivoSlider slider">
+<% _.each(feeds, function(feed){ %>
+              <img title="#fbid<%= _.escape(feed.id) %>" src="css/images/blank.png" />
+<% }); %>
+            </div>
+<% _.each(feeds, function(feed){ %>
+            <div id="fbid<%= _.escape(feed.id) %>" class="nivo-html-caption">
+              <% if(feed.picture_id) { %>
+              <span class="image-layer" style="background-image: url(<%= _.escape(pictures[feed.picture_id].source) %>);"></span>
+              <% } %>
+              <% if(feed.message) { %>
+              <span class="message-layer"><%= _.escape(feed.message) %></span>
+              <% } %>
+
+              <span class="avatar" style="background-image: url(http://graph.facebook.com/<%= _.escape(feed.from.id) %>/picture?type=large);"></span>
+            </div>
+<% }); %>
+          </div>
+      </script>
+      <div class="center-helper">
+        <div class="center-content">
+
+        </div>
       </div>
     </div>
   </body>
