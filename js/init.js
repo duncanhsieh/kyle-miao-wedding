@@ -26,11 +26,19 @@ $(function(){
     initialize: function() {
       var feed = this;
       if(this.attributes.id) {
-        console.log("Feed initialize");
+        if(this.attributes.likes) {
+          var likes = this.attributes.likes.data.length;
+          this.set('like_count', likes);
+        } else {
+          this.set('like_count', 0);
+        }
         if(this.attributes.picture) {
-          FB.api('/' + this.attributes.link.match('fbid=([0-9]+)')[1] , function(data){
-            console.log("Feed picture loaded");
-            feed.set({"image":data.images[0]});
+          FB.api('/' + this.attributes.link.match('fbid=([0-9]+)')[1] , function(response){
+            if (!response || response.error) {
+              console.log('feed image Error occured');
+            } else if(response.images) {
+              feed.set({"image":response.images[0]});
+            }
           });
         }
         this.reload();
@@ -38,28 +46,26 @@ $(function(){
     },
     reload: function(){
       var feed = this;
-      FB.api("/" + feed.attributes.id, function(data){
-        console.log("load:" + data.id);
-        feed.set(data);
+      FB.api("/" + feed.attributes.id + "/likes?summary=true", function(response){
+        if (!response || response.error) {
+          console.log('feed Error occured');
+        } else {
+          if(response.summary.total_count) {
+            var likes = response.summary.total_count;
+            var like_count = 0;
+            if(likes > 27) {
+              like_count = 49;
+            }
+            if(likes > 50) {
+               like_count = 50;
+            }
+            feed.set('like_count', like_count);
+          }
+        }
         window.setTimeout(function(){
           feed.reload();
         }, Math.random() * 60000);
       })
-    }
-  });
-
-  var Picture = Backbone.Model.extend({
-    initialize: function() {
-      this.defered = $.Deferred();
-      var pic = this;
-      FB.api('/' + this.attributes.id , function(data){
-        pic.set({"image":data.images[0]});
-      });
-    }
-  });
-
-  var User = Backbone.Model.extend({
-    initialize: function() {
     }
   });
 
@@ -69,35 +75,23 @@ $(function(){
     model: Feed,
     group_id: null,
     initialize: function(group_id){
-      console.log("Feed List initialize");
       this.group_id = group_id;
       this.reload();
     },
     reload: function(){
       var feedList = this;
-      FB.api('/' + feedList.group_id + '/feed', function(feeds){
-        console.log("feed List reload");
-        feedList.add(feeds.data);
+      FB.api('/' + feedList.group_id + '/feed', function(response){
+        if (!response || response.error) {
+          console.log('feedList Error occured');
+        } else {
+          feedList.add(response.data);
+        }
         window.setTimeout(function(){
           feedList.reload();
         }, Math.random() * 30000);
       });
     }
   });
-
-  var PictureList = Backbone.Collection.extend({
-    model: Picture,
-    check: function(){
-      var defereds = [];
-      this.each(function(pic) {
-        defereds.push(pic.check());
-      });
-      return $.when.apply($, defereds);
-    }
-  });
-
-  var pictureList = new PictureList();
-
 
   /* Views */
 
@@ -137,42 +131,77 @@ $(function(){
     group_click : function(){
       this.remove();
       console.log("選擇社團：" + this.$el.find('select').val());
-      sliderView = new SliderView(this.$el.find('select').val());
+      var sliderView = new SliderView(this.$el.find('select').val());
     }
   });
 
   var FeedView = Backbone.View.extend({
-    initialize: function(id){
-      console.log("Feed View initialize");
-      this.model = new Feed(id);
-      this.model.on("change", function(){
-        console.log("feedView Change Event");
-      }, this);
+    template : _.template($('#feed_item_template').html()),
+    initialize: function(){
+      this.render();
+      this.listenTo(this.model, "change:image", this.imageChanged);
+      this.listenTo(this.model, "change:like_count", this.likesChanged);
+    },
+    render : function () {
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
+    },
+    imageChanged: function(feed){
+      this.$el.find('.center-content').css({
+        "background-image": 'url(' + feed.attributes.image.source + ')'
+      });this.$el.css({
+        "background": 'rgba(0,0,0,0.33)'
+      });
+    },
+    likesChanged: function(feed){
+      var like = feed.attributes.like_count;
+      this.$el.find('.animation-wrap').attr({"data-like":like});
     }
   });
 
   var SliderView = Backbone.View.extend({
     el: $('#slider_view'),
     initialize : function(group_id){
-      console.log("Slider View initialize");
       this.model = new FeedList(group_id);
       this.$el.removeClass('hide');
       this.listenTo(this.model, "add", this.addFeed);
+
     },
-    addFeed: function(data){
-      console.log("add:");
-      console.log(this);
-      console.log(data)
+    addFeed: function(feed){
+      var that = this;
+      that.$el.append('<div id="feed_'+feed.attributes.id+'" class="feed-view"></div>');
+      var feedView = new FeedView({el: $('#feed_'+feed.attributes.id), model: feed});
+
+      if(this.is_run) {
+      } else {
+        this.$el.find('.feed-view:first-child').addClass('active');
+        var next = this.$el.find('.active');
+        this.is_run = true;
+        next.fadeIn(1000, function(){
+          next.addClass('active');
+          window.setTimeout(function(){
+            that.runner();
+          }, 10000);
+        });
+      }
+    },
+    runner: function(){
+      var that = this;
+      var target = this.$el.find('.active');
+      var next = target.next();
+      if(next.length == 0) {
+        next = this.$el.find('.feed-view:first-child');
+      }
+      target.fadeOut(1000, function(){
+        target.removeClass('active');
+        next.fadeIn(1000, function(){
+          next.addClass('active');
+          window.setTimeout(function(){
+            that.runner();
+          }, 10000);
+        });
+      });
     }
-    // template : _.template($('#slider_item').html()),
   });
 
 });
-
-// effect: "fade",
-// animSpeed: 500,
-// pauseTime: 10000,
-// directionNav: false,
-// controlNav: false,
-// controlNavThumbs: false,
-// pauseOnHover: false

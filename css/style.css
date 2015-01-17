@@ -33,62 +33,353 @@ html, body, .wrap {
   display: inline-block;
 }
 
-/* line 22, ../sass/style.scss */
-.nivo-caption {
-  background: transparent;
-  opacity: 1;
-  left: 0px;
-  top: 0px;
-  bottom: auto;
-  height: 100vh;
-  background: url(images/fla.png) no-repeat center center fixed;
-  -webkit-background-size: cover;
-  -moz-background-size: cover;
-  -o-background-size: cover;
+/* line 18, ../sass/style.scss */
+.slider-view {
+  min-height: 100%;
+  min-height: 100vh;
+  background: url(images/fla.png);
   background-size: cover;
 }
 
-/* line 36, ../sass/style.scss */
-.avatar {
-  position: absolute;
+/* line 26, ../sass/style.scss */
+.feed-view {
+  height: 100%;
+  height: 100vh;
+  display: none;
+}
+/* line 32, ../sass/style.scss */
+.feed-view.active .feed-wrap {
+  width: 100%;
+  color: #000;
+  opacity: 1;
+}
+/* line 37, ../sass/style.scss */
+.feed-view.active .feed-wrap .message-wrap {
+  display: block;
+}
+/* line 43, ../sass/style.scss */
+.feed-view.active div[data-like='1'] .kyle {
+  width: 1200px;
+}
+/* line 46, ../sass/style.scss */
+.feed-view.active div[data-like='1'] .miao {
+  display: none;
+}
+/* line 51, ../sass/style.scss */
+.feed-view.active div[data-like='2'] .kyle {
+  display: none;
+}
+/* line 54, ../sass/style.scss */
+.feed-view.active div[data-like='2'] .miao {
+  width: 1200px;
+}
+/* line 63, ../sass/style.scss */
+.feed-view.active div[data-like='4'] .kyle,
+.feed-view.active div[data-like='6'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 60px bottom;
+}
+/* line 74, ../sass/style.scss */
+.feed-view.active div[data-like='5'] .miao,
+.feed-view.active div[data-like='6'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 312px bottom;
+}
+/* line 82, ../sass/style.scss */
+.feed-view.active div[data-like='7'] .kyle,
+.feed-view.active div[data-like='9'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 120px bottom;
+}
+/* line 93, ../sass/style.scss */
+.feed-view.active div[data-like='8'] .miao,
+.feed-view.active div[data-like='9'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 262px bottom;
+}
+/* line 101, ../sass/style.scss */
+.feed-view.active div[data-like='10'] .kyle,
+.feed-view.active div[data-like='12'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 180px bottom;
+}
+/* line 112, ../sass/style.scss */
+.feed-view.active div[data-like='11'] .miao,
+.feed-view.active div[data-like='12'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 212px bottom;
+}
+/* line 120, ../sass/style.scss */
+.feed-view.active div[data-like='13'] .kyle,
+.feed-view.active div[data-like='15'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 240px bottom;
+}
+/* line 131, ../sass/style.scss */
+.feed-view.active div[data-like='13'] .miao,
+.feed-view.active div[data-like='15'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 162px bottom;
+}
+/* line 139, ../sass/style.scss */
+.feed-view.active div[data-like='16'] .kyle,
+.feed-view.active div[data-like='18'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 300px bottom;
+}
+/* line 150, ../sass/style.scss */
+.feed-view.active div[data-like='17'] .miao,
+.feed-view.active div[data-like='18'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 112px bottom;
+}
+/* line 158, ../sass/style.scss */
+.feed-view.active div[data-like='19'] .kyle,
+.feed-view.active div[data-like='21'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 360px bottom;
+}
+/* line 169, ../sass/style.scss */
+.feed-view.active div[data-like='20'] .miao,
+.feed-view.active div[data-like='21'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 62px bottom;
+}
+/* line 177, ../sass/style.scss */
+.feed-view.active div[data-like='22'] .kyle,
+.feed-view.active div[data-like='24'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 420px bottom;
+}
+/* line 188, ../sass/style.scss */
+.feed-view.active div[data-like='23'] .miao,
+.feed-view.active div[data-like='24'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 31px bottom;
+}
+/* line 196, ../sass/style.scss */
+.feed-view.active div[data-like='25'] .kyle,
+.feed-view.active div[data-like='27'] .kyle {
+  transition: background-position 0.5s ease 5s;
+  background-position: 484px bottom;
+}
+/* line 207, ../sass/style.scss */
+.feed-view.active div[data-like='26'] .miao,
+.feed-view.active div[data-like='27'] .miao {
+  transition: background-position 0.5s ease 5s;
+  background-position: 0 bottom;
+}
+/* line 214, ../sass/style.scss */
+.feed-view .center-content {
+  width: 100%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+/* line 221, ../sass/style.scss */
+.feed-view .animation-wrap {
+  height: 60vh;
+}
+/* line 223, ../sass/style.scss */
+.feed-view .animation-wrap:after {
+  content: "";
+  height: 100%;
+  display: inline-block;
+}
+/* line 228, ../sass/style.scss */
+.feed-view .animation-wrap:before {
+  content: "";
+  height: 100%;
+  display: inline-block;
+}
+/* line 233, ../sass/style.scss */
+.feed-view .animation-wrap .kyle {
+  vertical-align: bottom;
+  background-image: url(images/boy.png);
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  width: 600px;
+  height: 385px;
+  display: inline-block;
+}
+/* line 243, ../sass/style.scss */
+.feed-view .animation-wrap .miao {
+  vertical-align: bottom;
+  background-image: url(images/girl.png);
+  background-repeat: no-repeat;
+  background-position: right bottom;
+  width: 600px;
+  height: 385px;
+  display: inline-block;
+}
+/* line 254, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="0"] .kyle {
+  display: none;
+}
+/* line 257, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="0"] .miao {
+  display: none;
+}
+/* line 262, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="1"] .kyle {
+  display: inline-block;
+}
+/* line 265, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="1"] .miao {
+  display: none;
+}
+/* line 270, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="2"] .kyle {
+  display: inline-block;
+}
+/* line 273, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="2"] .miao {
+  display: inline-block;
+}
+/* line 281, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="4"] .kyle, .feed-view .animation-wrap[data-like="5"] .kyle, .feed-view .animation-wrap[data-like="6"] .kyle {
+  background-position: 00px bottom;
+}
+/* line 284, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="4"] .miao, .feed-view .animation-wrap[data-like="5"] .miao, .feed-view .animation-wrap[data-like="6"] .miao {
+  background-position: 362px bottom;
+}
+/* line 292, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="7"] .kyle, .feed-view .animation-wrap[data-like="8"] .kyle, .feed-view .animation-wrap[data-like="9"] .kyle {
+  background-position: 60px bottom;
+}
+/* line 295, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="7"] .miao, .feed-view .animation-wrap[data-like="8"] .miao, .feed-view .animation-wrap[data-like="9"] .miao {
+  background-position: 312px bottom;
+}
+/* line 302, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="10"] .kyle, .feed-view .animation-wrap[data-like="11"] .kyle, .feed-view .animation-wrap[data-like="12"] .kyle {
+  background-position: 120px bottom;
+}
+/* line 305, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="10"] .miao, .feed-view .animation-wrap[data-like="11"] .miao, .feed-view .animation-wrap[data-like="12"] .miao {
+  background-position: 262px bottom;
+}
+/* line 312, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="13"] .kyle, .feed-view .animation-wrap[data-like="14"] .kyle, .feed-view .animation-wrap[data-like="15"] .kyle {
+  background-position: 180px bottom;
+}
+/* line 315, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="13"] .miao, .feed-view .animation-wrap[data-like="14"] .miao, .feed-view .animation-wrap[data-like="15"] .miao {
+  background-position: 212px bottom;
+}
+/* line 322, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="16"] .kyle, .feed-view .animation-wrap[data-like="17"] .kyle, .feed-view .animation-wrap[data-like="18"] .kyle {
+  background-position: 240px bottom;
+}
+/* line 325, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="16"] .miao, .feed-view .animation-wrap[data-like="17"] .miao, .feed-view .animation-wrap[data-like="18"] .miao {
+  background-position: 162px bottom;
+}
+/* line 332, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="19"] .kyle, .feed-view .animation-wrap[data-like="20"] .kyle, .feed-view .animation-wrap[data-like="21"] .kyle {
+  background-position: 300px bottom;
+}
+/* line 335, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="19"] .miao, .feed-view .animation-wrap[data-like="20"] .miao, .feed-view .animation-wrap[data-like="21"] .miao {
+  background-position: 112px bottom;
+}
+/* line 342, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="22"] .kyle, .feed-view .animation-wrap[data-like="23"] .kyle, .feed-view .animation-wrap[data-like="24"] .kyle {
+  background-position: 360px bottom;
+}
+/* line 345, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="22"] .miao, .feed-view .animation-wrap[data-like="23"] .miao, .feed-view .animation-wrap[data-like="24"] .miao {
+  background-position: 62px bottom;
+}
+/* line 352, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="25"] .kyle, .feed-view .animation-wrap[data-like="26"] .kyle, .feed-view .animation-wrap[data-like="27"] .kyle {
+  background-position: 420px bottom;
+}
+/* line 355, ../sass/style.scss */
+.feed-view .animation-wrap[data-like="25"] .miao, .feed-view .animation-wrap[data-like="26"] .miao, .feed-view .animation-wrap[data-like="27"] .miao {
+  background-position: 31px bottom;
+}
+/* line 360, ../sass/style.scss */
+.feed-view .animation-wrap[data-like='49'] .kyle,
+.feed-view .animation-wrap[data-like='49'] .miao {
+  display: none;
+}
+/* line 364, ../sass/style.scss */
+.feed-view .animation-wrap[data-like='49'] .together {
+  display: inline-block;
+  background-image: url(images/kiss01.png);
+  width: 312px;
+  height: 251px;
+  margin-left: 100px;
+}
+/* line 373, ../sass/style.scss */
+.feed-view .animation-wrap[data-like='50'] .kyle,
+.feed-view .animation-wrap[data-like='50'] .miao {
+  display: none;
+}
+/* line 377, ../sass/style.scss */
+.feed-view .animation-wrap[data-like='50'] .together {
+  display: inline-block;
+  background-image: url(images/kiss02.png);
+  background-position: center bottom;
+  width: 312px;
+  height: 251px;
+  margin-left: 100px;
+  -webkit-animation: kiss 1s steps(1, end) infinite;
+}
+/* line 389, ../sass/style.scss */
+.feed-view .feed-wrap {
+  height: 40vh;
+  opacity: 0;
+  transition: color 0.5s ease 3s, width 1s ease 2s, opacity 1s ease;
+  display: inline-block;
+  width: 300px;
+  color: transparent;
+}
+/* line 397, ../sass/style.scss */
+.feed-view .feed-wrap .avatar-wrap {
+  float: left;
+}
+/* line 399, ../sass/style.scss */
+.feed-view .feed-wrap .avatar-wrap .avatar {
   display: block;
   width: 200px;
   height: 200px;
   border-radius: 100px;
   background-size: cover;
-  bottom: 100px;
-  left: 100px;
-  z-index: 10;
+  margin: 0 50px;
 }
-
-/* line 48, ../sass/style.scss */
-.message-layer {
-  position: absolute;
-  bottom: 100px;
-  left: 0;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.7);
-  display: block;
-  width: 65%;
-  height: 3em;
+/* line 408, ../sass/style.scss */
+.feed-view .feed-wrap .message-wrap {
+  transition: display 1s ease 3s;
+  display: none;
+  padding-left: 300px;
+  padding-right: 50px;
+}
+/* line 414, ../sass/style.scss */
+.feed-view .feed-wrap .message-wrap .content-wrap {
+  background: rgba(255, 255, 255, 0.66);
   border-radius: 20px;
-  box-sizing: content-box;
-  margin-left: 330px;
-  padding: 30px;
-  font-size: 44px;
-  color: #000;
   overflow: hidden;
 }
+/* line 420, ../sass/style.scss */
+.feed-view .feed-wrap .message-wrap .content {
+  font-size: 42px;
+  line-height: 1.5em;
+  overflow: hidden;
+  height: 189px;
+  margin: 20px;
+}
 
-/* line 66, ../sass/style.scss */
-.image-layer {
-  position: absolute;
-  display: block;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background-size: contain;
-  background-position: center;
-  background-repeat: no-repeat;
+@-webkit-keyframes kiss {
+  0% {
+    height: 265px;
+  }
+  50% {
+    height: 385px;
+  }
+  10% {
+    height: 265px;
+  }
 }
