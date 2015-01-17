@@ -24,35 +24,37 @@ $(function(){
 
   var Feed = Backbone.Model.extend({
     initialize: function() {
-      if(this.attributes.picture) {
-        pictureList.add({ "id" : this.attributes.link.match('fbid=([0-9]+)')[1]});
-        this.set({"picture_id" : this.attributes.link.match('fbid=([0-9]+)')[1]});
-      } else {
-        this.set({"picture_id" : null});
+      var feed = this;
+      if(this.attributes.id) {
+        console.log("Feed initialize");
+        if(this.attributes.picture) {
+          FB.api('/' + this.attributes.link.match('fbid=([0-9]+)')[1] , function(data){
+            console.log("Feed picture loaded");
+            feed.set({"image":data.images[0]});
+          });
+        }
+        this.reload();
       }
-      console.log(this.attributes);
-      // if(this.attributes.from) {
-      //   userList.add(this.attributes.from);
-      // }
+    },
+    reload: function(){
+      var feed = this;
+      FB.api("/" + feed.attributes.id, function(data){
+        console.log("load:" + data.id);
+        feed.set(data);
+        window.setTimeout(function(){
+          feed.reload();
+        }, Math.random() * 60000);
+      })
     }
   });
 
   var Picture = Backbone.Model.extend({
-    defered : null,
     initialize: function() {
       this.defered = $.Deferred();
       var pic = this;
       FB.api('/' + this.attributes.id , function(data){
         pic.set({"image":data.images[0]});
-        pic.defered.resolve(true);
       });
-    },
-    check: function(){
-      if(this.attributes.image) {
-        return true;
-      } else {
-        return this.defered.promise();
-      }
     }
   });
 
@@ -64,10 +66,24 @@ $(function(){
   /* Collections */
 
   var FeedList = Backbone.Collection.extend({
-    model: Feed
+    model: Feed,
+    group_id: null,
+    initialize: function(group_id){
+      console.log("Feed List initialize");
+      this.group_id = group_id;
+      this.reload();
+    },
+    reload: function(){
+      var feedList = this;
+      FB.api('/' + feedList.group_id + '/feed', function(feeds){
+        console.log("feed List reload");
+        feedList.add(feeds.data);
+        window.setTimeout(function(){
+          feedList.reload();
+        }, Math.random() * 30000);
+      });
+    }
   });
-
-  var feedList = new FeedList();
 
   var PictureList = Backbone.Collection.extend({
     model: Picture,
@@ -81,12 +97,6 @@ $(function(){
   });
 
   var pictureList = new PictureList();
-
-  // var UserList = Backbone.Collection.extend({
-  //   model: User
-  // });
-
-  // var userList = new UserList();
 
 
   /* Views */
@@ -126,82 +136,35 @@ $(function(){
     template : _.template($('#group_item_template').html()),
     group_click : function(){
       this.remove();
+      console.log("選擇社團：" + this.$el.find('select').val());
       sliderView = new SliderView(this.$el.find('select').val());
+    }
+  });
+
+  var FeedView = Backbone.View.extend({
+    initialize: function(id){
+      console.log("Feed View initialize");
+      this.model = new Feed(id);
+      this.model.on("change", function(){
+        console.log("feedView Change Event");
+      }, this);
     }
   });
 
   var SliderView = Backbone.View.extend({
     el: $('#slider_view'),
-    fb_data: [],
-    fb_images: {},
-    initialize : function( group_id ){
-      var that = this;
-      this.group_id = group_id;
+    initialize : function(group_id){
+      console.log("Slider View initialize");
+      this.model = new FeedList(group_id);
       this.$el.removeClass('hide');
-      this.go();
+      this.listenTo(this.model, "add", this.addFeed);
     },
-    template : _.template($('#slider_item').html()),
-    go: function(){
-      var that = this;
-      this.fetchFB().done(function(data){
-        feedList.add(data);
-
-        pictureList.check().done(function(){
-          var pictures = pictureList.toJSON();
-          var picturesObj = {};
-          for (var i = pictures.length - 1; i >= 0; i--) {
-            picturesObj[pictures[i].id] = pictures[i].image;
-          };
-          var feeds = {"feeds": feedList.toJSON(), "pictures": picturesObj};
-          console.log(feeds);
-          var template = that.template(feeds);
-          that.$el.find('.center-content').html(template);
-          that.$el.find('#slider').nivoSlider({
-            effect: "fade",
-            animSpeed: 500,
-            pauseTime: 10000,
-            directionNav: false,
-            controlNav: false,
-            controlNavThumbs: false,
-            pauseOnHover: true
-          });
-        });
-
-        // window.setTimeout(function(){
-        //   that.go();
-        // }, 10000);
-      });
+    addFeed: function(data){
+      console.log("add:");
+      console.log(this);
+      console.log(data)
     }
-    ,
-    fetchFB: function(){
-      this.fb_data = [];
-      var that = this;
-      var defered = $.Deferred();
-
-      var fetchMore = function(url){
-        $.get(url).done(function(data){
-          that.fb_data = that.fb_data.concat(data.data);
-          if(data.paging && data.paging.next && that.fb_data.length < 100) {
-            fetchMore(data.paging.next);
-          } else {
-            defered.resolve(that.fb_data);
-          }
-        }).error(function(){
-          defered.reject('jQuery GET Error');
-        });
-      }
-
-      FB.api('/' + this.group_id + '/feed', function(data){
-        that.fb_data = that.fb_data.concat(data.data);
-        if(data.paging && data.paging.next) {
-          fetchMore(data.paging.next);
-        } else {
-          defered.resolve(that.fb_data);
-        }
-      });
-
-      return defered.promise();
-    }
+    // template : _.template($('#slider_item').html()),
   });
 
 });
