@@ -32,7 +32,8 @@ $(function(){
         } else {
           this.set('like_count', 0);
         }
-        if(this.attributes.picture) {
+        if(this.attributes.picture && this.attributes.link) {
+          try{
           FB.api('/' + this.attributes.link.match('fbid=([0-9]+)')[1] , function(response){
             if (!response || response.error) {
               console.log('feed image Error occured');
@@ -40,6 +41,9 @@ $(function(){
               feed.set({"image":response.images[0]});
             }
           });
+          } catch( e) {
+
+          }
         }
         this.reload();
       }
@@ -52,11 +56,11 @@ $(function(){
         } else {
           if(response.summary.total_count) {
             var likes = response.summary.total_count;
-            var like_count = 0;
-            if(likes > 27) {
+            var like_count = likes;
+            if(likes > 10) {
               like_count = 49;
             }
-            if(likes > 50) {
+            if(likes > 20) {
                like_count = 50;
             }
             feed.set('like_count', like_count);
@@ -120,6 +124,7 @@ $(function(){
     initialize : function(){
       var that = this;
       FB.api('/me?fields=id,name,groups', function(response){
+        console.log(response);
         var groups = response.groups.data;
         for (var i = groups.length - 1; i >= 0; i--) {
           that.$el.find('select').append(that.template(groups[i]));
@@ -143,7 +148,11 @@ $(function(){
       this.listenTo(this.model, "change:like_count", this.likesChanged);
     },
     render : function () {
-      this.$el.html(this.template(this.model.toJSON()));
+      if(this.model.toJSON().message || this.model.toJSON().picture) {
+        this.$el.html(this.template(this.model.toJSON()));
+      } else {
+        this.$el.remove();
+      }
       return this;
     },
     imageChanged: function(feed){
